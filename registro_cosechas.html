@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registros de Cosecha</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e8449;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2980b9;
+      color: white;
+    }
+
+    .exportar {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    canvas {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Registros de Cosecha</h1>
+
+  <div class="filtros">
+    <input type="date" id="filtroFecha">
+    <input type="number" id="filtroSemana" placeholder="Semana #" min="1" max="53">
+    <input type="text" id="filtroVariedad" placeholder="Variedad">
+    <input type="number" id="filtroInvernadero" placeholder="Invernadero #">
+    <input type="text" id="filtroResponsable" placeholder="Responsable">
+    <input type="text" id="filtroTurno" placeholder="Turno">
+    <button onclick="filtrar()">Filtrar</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Semana</th>
+        <th>Invernadero</th>
+        <th>Variedad</th>
+        <th>Kg</th>
+        <th>Responsable</th>
+        <th>Turno</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla"></tbody>
+  </table>
+
+  <div class="exportar">
+    <button onclick="exportarCSV()">📁 Exportar a Excel (CSV)</button>
+  </div>
+
+  <canvas id="grafico" width="800" height="400"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const registros = JSON.parse(localStorage.getItem('registrosCosecha')) || [];
+
+    function calcularSemana(fechaStr) {
+      const fecha = new Date(fechaStr);
+      const inicio = new Date(fecha.getFullYear(), 0, 1);
+      const dias = Math.floor((fecha - inicio) / 86400000);
+      return Math.floor((dias + inicio.getDay() + 1) / 7);
+    }
+
+    function mostrarTabla(lista) {
+      const tabla = document.getElementById('tabla');
+      tabla.innerHTML = '';
+      lista.forEach(r => {
+        const semana = calcularSemana(r.fecha);
+        tabla.innerHTML += `
+          <tr>
+            <td>${r.fecha}</td>
+            <td>${semana}</td>
+            <td>${r.invernadero}</td>
+            <td>${r.variedad}</td>
+            <td>${r.kg}</td>
+            <td>${r.responsable}</td>
+            <td>${r.turno}</td>
+            <td>${r.observaciones || ''}</td>
+          </tr>
+        `;
+      });
+
+      dibujarGrafico(lista);
+    }
+
+    function filtrar() {
+      const fFecha = document.getElementById('filtroFecha').value;
+      const fSemana = parseInt(document.getElementById('filtroSemana').value);
+      const fVariedad = document.getElementById('filtroVariedad').value.toLowerCase();
+      const fInvernadero = document.getElementById('filtroInvernadero').value;
+      const fResponsable = document.getElementById('filtroResponsable').value.toLowerCase();
+      const fTurno = document.getElementById('filtroTurno').value.toLowerCase();
+
+      const filtrado = registros.filter(r => {
+        const semana = calcularSemana(r.fecha);
+        return (!fFecha || r.fecha === fFecha) &&
+               (!fSemana || semana === fSemana) &&
+               (!fVariedad || r.variedad.toLowerCase().includes(fVariedad)) &&
+               (!fInvernadero || r.invernadero == fInvernadero) &&
+               (!fResponsable || r.responsable.toLowerCase().includes(fResponsable)) &&
+               (!fTurno || r.turno.toLowerCase().includes(fTurno));
+      });
+
+      mostrarTabla(filtrado);
+    }
+
+    function exportarCSV() {
+      const filas = document.querySelectorAll("#tabla tr");
+      let csv = "Fecha,Semana,Invernadero,Variedad,Kilogramos,Responsable,Turno,Observaciones\n";
+      filas.forEach(fila => {
+        const columnas = fila.querySelectorAll("td");
+        const filaCSV = Array.from(columnas).map(col => col.textContent).join(",");
+        csv += filaCSV + "\n";
+      });
+
+      const blob = new Blob([csv], {type: "text/csv"});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "registros_cosecha.csv";
+      link.click();
+    }
+
+    function dibujarGrafico(lista) {
+      const ctx = document.getElementById('grafico').getContext('2d');
+      const conteo = {};
+      lista.forEach(r => {
+        conteo[r.variedad] = (conteo[r.variedad] || 0) + r.kg;
+      });
+
+      const labels = Object.keys(conteo);
+      const data = Object.values(conteo);
+
+      if (window.myChart) window.myChart.destroy();
+      window.myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Kg por variedad',
+            data: data,
+            backgroundColor: '#d63030'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    mostrarTabla(registros);
+  </script>
+
+</body>
+</html>

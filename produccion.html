@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Producción Agroalpha</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('assets/fondo-chiles.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 40px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 12px 30px;
+      border-radius: 10px;
+    }
+
+    .botones {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 15px 35px;
+      font-size: 1.2em;
+      background-color: #d43030;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      background-color: #a62020;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Producción Agroalpha</h1>
+
+  <div class="botones">
+    <button onclick="location.href='ingreso_cosecha.html'">Ingreso Cosecha Diaria</button>
+    <button onclick="location.href='registro_cosechas.html'">Registros de Cosecha</button>
+  </div>
+
+</body>
+</html>

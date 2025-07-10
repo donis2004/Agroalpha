@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicio - Agroalpha</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('assets/fondo-chiles.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    h1 {
+      font-size: 3em;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 12px 30px;
+      border-radius: 10px;
+      margin-bottom: 40px;
+    }
+
+    .botones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 15px 35px;
+      font-size: 1.2em;
+      background-color: #d63030;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      background-color: #a62020;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Agroalpha: Panel Principal</h1>
+
+  <div class="botones">
+    <button onclick="location.href='produccion.html'">Producción</button>
+    <button onclick="location.href='plagas.html'">Plagas</button>
+    <button onclick="location.href='practicas.html'">Prácticas Culturales</button>
+  </div>
+
+</body>
+</html>

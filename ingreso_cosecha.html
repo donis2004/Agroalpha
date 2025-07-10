@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ingreso de Cosecha Diaria</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0fff0;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95em;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+      width: 100%;
+      padding: 5px;
+    }
+
+    input[readonly] {
+      background-color: #e8e8e8;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .modulo {
+      background-color: #ecf0f1;
+      font-weight: bold;
+    }
+
+    button {
+      padding: 12px 25px;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #1c5980;
+    }
+
+    .confirm {
+      color: green;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ingreso Diario de Cosecha por Invernadero</h1>
+  <p style="text-align:center;">Rellena los datos por invernadero y presiona <strong>Guardar</strong> para registrar.</p>
+
+  <table id="tabla-ingreso">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Invernadero</th>
+        <th>Variedad</th>
+        <th>Kg cosechados</th>
+        <th>Responsable</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="modulo"><td colspan="6">Módulo C</td></tr>
+      <tr><td><input type="date"></td><td>9</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>10</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>11</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>12</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+      <tr class="modulo"><td colspan="6">Módulo D</td></tr>
+      <tr><td><input type="date"></td><td>13</td><td><input type="text" value="Tomate" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>14</td><td><input type="text" value="Tomate" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>15</td><td><input type="text" value="Tomate" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>16</td><td><input type="text" value="Tomate" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+      <tr class="modulo"><td colspan="6">Módulo I</td></tr>
+      <tr><td><input type="date"></td><td>33</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>35</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+      <tr class="modulo"><td colspan="6">Módulo J</td></tr>
+      <tr><td><input type="date"></td><td>37</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td><input type="date"></td><td>39</td><td><input type="text" value="Mini" readonly></td><td><input type="number"></td><td><input type="text"></td><td><input type="text"></td></tr>
+    </tbody>
+  </table>
+
+  <button onclick="guardarDatos()">Guardar Cosecha</button>
+  <p class="confirm" id="confirmacion"></p>
+
+  <script>
+    function guardarDatos() {
+      const filas = document.querySelectorAll('#tabla-ingreso tbody tr');
+      let registros = JSON.parse(localStorage.getItem('registrosCosecha')) || [];
+
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll('td');
+        if (celdas.length === 6) {
+          const fecha = celdas[0].querySelector('input')?.value;
+          const invernadero = celdas[1].textContent.trim();
+          const variedad = celdas[2].querySelector('input')?.value.trim();
+          const kilos = parseFloat(celdas[3].querySelector('input')?.value) || 0;
+          const responsable = celdas[4].querySelector('input')?.value.trim();
+          const observaciones = celdas[5].querySelector('input')?.value.trim();
+
+          if (fecha && variedad && kilos > 0) {
+            registros.push({
+              fecha,
+              invernadero,
+              variedad,
+              kg: kilos,
+              responsable,
+              observaciones
+            });
+          }
+        }
+      });
+
+      localStorage.setItem('registrosCosecha', JSON.stringify(registros));
+      document.getElementById('confirmacion').textContent = '✅ Registros guardados correctamente.';
+    }
+  </script>
+
+</body>
+</html>
