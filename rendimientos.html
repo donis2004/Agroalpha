@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agroalpha - Rendimientos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      background-color: #2e7d32;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #ffffff;
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #a5d6a7;
+    }
+
+    tr:nth-child(even) {
+      background-color: #e8f5e9;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Agroalpha - Rendimientos por Invernadero</header>
+
+  <form id="formRendimiento">
+    <label for="invernadero">Invernadero</label>
+    <select id="invernadero" required>
+      <option value="">Seleccione un invernadero</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="33">33</option>
+      <option value="35">35</option>
+      <option value="37">37</option>
+      <option value="39">39</option>
+    </select>
+
+    <label for="camasTotales">Número de Camas</label>
+    <input type="number" id="camasTotales" required />
+
+    <label for="enguiadas">Camas Enguiadas</label>
+    <input type="number" id="enguiadas" />
+
+    <label for="deshojadas">Camas Deshojadas</label>
+    <input type="number" id="deshojadas" />
+
+    <label for="raleadas">Camas Raleadas</label>
+    <input type="number" id="raleadas" />
+
+    <button type="submit">Guardar</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Invernadero</th>
+        <th>Nº Camas</th>
+        <th>Diferencia</th>
+        <th>Enguiadas</th>
+        <th>Diferencia</th>
+        <th>Deshojadas</th>
+        <th>Diferencia</th>
+        <th>Raleadas</th>
+        <th>Diferencia</th>
+      </tr>
+    </thead>
+    <tbody id="tablaRendimiento"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("formRendimiento");
+    const tabla = document.getElementById("tablaRendimiento");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const invernadero = document.getElementById("invernadero").value;
+      const camas = parseInt(document.getElementById("camasTotales").value || 0);
+      const enguile = parseInt(document.getElementById("enguiadas").value || 0);
+      const deshoje = parseInt(document.getElementById("deshojadas").value || 0);
+      const raleo = parseInt(document.getElementById("raleadas").value || 0);
+      const base = 278;
+
+      const fila = `
+        <tr>
+          <td>${invernadero}</td>
+          <td>${camas}</td>
+          <td>${camas - base}</td>
+          <td>${enguile}</td>
+          <td>${enguile - base}</td>
+          <td>${deshoje}</td>
+          <td>${deshoje - base}</td>
+          <td>${raleo}</td>
+          <td>${raleo - base}</td>
+        </tr>
+      `;
+
+      tabla.innerHTML += fila;
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>

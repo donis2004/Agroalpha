@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agroalpha - Personal Asignado (Editable)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      background-color: #2e7d32;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #ffffff;
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #a5d6a7;
+    }
+
+    tr:nth-child(even) {
+      background-color: #e8f5e9;
+    }
+
+    .acciones button {
+      background-color: #d32f2f;
+      margin: 0 5px;
+    }
+
+    td[contenteditable="true"] {
+      background-color: #f1f8e9;
+    }
+
+    select.editable {
+      width: 100%;
+      border: none;
+      background-color: #f1f8e9;
+      font-family: inherit;
+      font-size: inherit;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Agroalpha - Registro de Personal (Editable)</header>
+
+  <form id="formPersonal">
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" required />
+
+    <label for="codigo">Código</label>
+    <input type="text" id="codigo" required />
+
+    <label for="asignacion">Asignación</label>
+    <input type="text" id="asignacion" required />
+
+    <label for="invernadero">Invernadero</label>
+    <select id="invernadero" required>
+      <option value="">Seleccione un invernadero</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="33">33</option>
+      <option value="35">35</option>
+      <option value="37">37</option>
+      <option value="39">39</option>
+    </select>
+
+    <button type="submit">Guardar</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Código</th>
+        <th>Asignación</th>
+        <th>Invernadero</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody id="tablaPersonal"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("formPersonal");
+    const tabla = document.getElementById("tablaPersonal");
+    let personal = JSON.parse(localStorage.getItem("personal")) || [];
+
+    const opcionesInvernadero = `
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="33">33</option>
+      <option value="35">35</option>
+      <option value="37">37</option>
+      <option value="39">39</option>
+    `;
+
+    function guardarLocal() {
+      localStorage.setItem("personal", JSON.stringify(personal));
+    }
+
+    function renderizarTabla() {
+      tabla.innerHTML = "";
+      personal.forEach((p, index) => {
+        tabla.innerHTML += `
+          <tr>
+            <td contenteditable="true" onblur="actualizarCampo(${index}, 'nombre', this.innerText)">${p.nombre}</td>
+            <td contenteditable="true" onblur="actualizarCampo(${index}, 'codigo', this.innerText)">${p.codigo}</td>
+            <td contenteditable="true" onblur="actualizarCampo(${index}, 'asignacion', this.innerText)">${p.asignacion}</td>
+            <td>
+              <select class="editable" onchange="actualizarCampo(${index}, 'invernadero', this.value)">
+                ${opcionesInvernadero.replace(`value="${p.invernadero}"`, `value="${p.invernadero}" selected`)}
+              </select>
+            </td>
+            <td><button onclick="eliminarRegistro(${index})">❌</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    function actualizarCampo(index, campo, valor) {
+      personal[index][campo] = valor;
+      guardarLocal();
+    }
+
+    function eliminarRegistro(index) {
+      if (confirm("¿Eliminar este registro?")) {
+        personal.splice(index, 1);
+        guardarLocal();
+        renderizarTabla();
+      }
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nuevo = {
+        nombre: form.nombre.value,
+        codigo: form.codigo.value,
+        asignacion: form.asignacion.value,
+        invernadero: form.invernadero.value
+      };
+      personal.push(nuevo);
+      guardarLocal();
+      renderizarTabla();
+      form.reset();
+    });
+
+    renderizarTabla();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Control de Labores - Agroalpha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      background-color: #2e7d32;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #ffffff;
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    .filtro {
+      max-width: 300px;
+      margin: 0 auto 20px auto;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #a5d6a7;
+    }
+
+    tr:nth-child(even) {
+      background-color: #e8f5e9;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Agroalpha - Control de Labores</header>
+
+  <form id="formLabores">
+    <label for="invernadero">Invernadero</label>
+    <select id="invernadero" required>
+      <option value="">Seleccione un invernadero</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="33">33</option>
+      <option value="35">35</option>
+      <option value="37">37</option>
+      <option value="39">39</option>
+    </select>
+
+    <label for="nombre">Nombre Asignado</label>
+    <input type="text" id="nombre" required />
+
+    <label for="camasAsignadas">Camas Asignadas</label>
+    <input type="number" id="camasAsignadas" min="0" required />
+
+    <label for="camasEnguile">Camas Enguile</label>
+    <input type="number" id="camasEnguile" min="0" />
+
+    <label for="camasRaleo">Camas Raleo</label>
+    <input type="number" id="camasRaleo" min="0" />
+
+    <label for="camasDeshoje">Camas Deshoje</label>
+    <input type="number" id="camasDeshoje" min="0" />
+
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha" required />
+
+    <button type="submit">Guardar Registro</button>
+  </form>
+
+  <div class="filtro">
+    <label for="filtroInvernadero">Filtrar por Invernadero:</label>
+    <select id="filtroInvernadero">
+      <option value="">Todos</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="33">33</option>
+      <option value="35">35</option>
+      <option value="37">37</option>
+      <option value="39">39</option>
+    </select>
+  </div>
+
+  <table id="tablaRegistros">
+    <thead>
+      <tr>
+        <th>Invernadero</th>
+        <th>Fecha</th>
+        <th>Semana</th>
+        <th>Nombre</th>
+        <th>Asignadas</th>
+        <th>Enguile</th>
+        <th>Raleo</th>
+        <th>Deshoje</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("formLabores");
+    const tabla = document.querySelector("#tablaRegistros tbody");
+    const filtroInvernadero = document.getElementById("filtroInvernadero");
+
+    const getSemana = (fechaStr) => {
+      const fecha = new Date(fechaStr);
+      const primerDia = new Date(fecha.getFullYear(), 0, 1);
+      const diasTranscurridos = Math.floor((fecha - primerDia) / 86400000);
+      return Math.ceil((diasTranscurridos + primerDia.getDay() + 1) / 7);
+    };
+
+    const guardarRegistro = (registro) => {
+      const registros = JSON.parse(localStorage.getItem("labores")) || [];
+      registros.push(registro);
+      localStorage.setItem("labores", JSON.stringify(registros));
+    };
+
+    const cargarRegistros = () => {
+      const registros = JSON.parse(localStorage.getItem("labores")) || [];
+      mostrarTabla(registros);
+    };
+
+    const mostrarTabla = (registros) => {
+      tabla.innerHTML = "";
+      registros.forEach(r => {
+        const fila = `<tr>
+          <td>${r.invernadero}</td>
+          <td>${r.fecha}</td>
+          <td>Semana ${r.semana}</td>
+          <td>${r.nombre}</td>
+          <td>${r.asignadas}</td>
+          <td>${r.enguile}</td>
+          <td>${r.raleo}</td>
+          <td>${r.deshoje}</td>
+        </tr>`;
+        tabla.innerHTML += fila;
+      });
+    };
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fecha = form.fecha.value;
+      const semana = getSemana(fecha);
+
+      const registro = {
+        invernadero: form.invernadero.value,
+        fecha,
+        semana,
+        nombre: form.nombre.value,
+        asignadas: form.camasAsignadas.value,
+        enguile: form.camasEnguile.value || 0,
+        raleo: form.camasRaleo.value || 0,
+        deshoje: form.camasDeshoje.value || 0
+      };
+
+      guardarRegistro(registro);
+      cargarRegistros();
+      form.reset();
+    });
+
+    filtroInvernadero.addEventListener("change", () => {
+      const filtro = filtroInvernadero.value;
+      const registros = JSON.parse(localStorage.getItem("labores")) || [];
+      const filtrados = filtro ? registros.filter(r => r.invernadero === filtro) : registros;
+      mostrarTabla(filtrados);
+    });
+
+    cargarRegistros();
+  </script>
+
+</body>
+</html>
