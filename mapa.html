@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agroalpha - Mapa Interactivo con Paleta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      margin: 0; padding: 20px; color: #333; text-align: center;
+    }
+    header {
+      background-color: #2e7d32;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    .mapa {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .fila {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 5px;
+      justify-content: center;
+    }
+    .capilla {
+      width: 60px; height: 60px;
+      background-color: #a5d6a7;
+      border: 2px solid #388e3c;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
+    }
+    .capilla:hover {
+      transform: scale(1.05);
+    }
+    .pasillo {
+      width: 100%;
+      height: 40px;
+      background-color: #c8e6c9;
+      color: #2e7d32;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 700px;
+      background: white;
+      border: 3px solid #388e3c;
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h3 {
+      margin-top: 0;
+    }
+    .modal .camas {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .cama {
+      background: #e8f5e9;
+      border: 1px solid #81c784;
+      border-radius: 5px;
+      padding: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cama-header {
+      font-weight: bold;
+      margin-bottom: 6px;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tramos {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+    }
+    .tramo {
+      width: 20px;
+      height: 20px;
+      background-color: #c8e6c9;
+      border: 1px solid #a5d6a7;
+      border-radius: 3px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+    /* Paleta */
+    .paleta {
+      margin-top: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      user-select: none;
+    }
+    .color-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    .color-btn.selected {
+      border-color: #000;
+    }
+    .verde { background-color: #4caf50; }
+    .rojo { background-color: #f44336; }
+    .amarillo { background-color: #ffeb3b; }
+    .azul { background-color: #2196f3; }
+    .borrador {
+      background: linear-gradient(45deg, #999 25%, #eee 25%, #eee 50%, #999 50%, #999 75%, #eee 75%, #eee);
+      background-size: 20px 20px;
+      border: 2px solid #666;
+      position: relative;
+    }
+    .borrador::after {
+      content: "✖";
+      color: #666;
+      font-weight: bold;
+      position: absolute;
+      top: 7px;
+      left: 11px;
+      font-size: 20px;
+      pointer-events: none;
+    }
+    /* Close button */
+    .cerrar {
+      background-color: #d32f2f;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      float: right;
+      cursor: pointer;
+      user-select: none;
+    }
+    /* Scroll modal */
+    .modal::-webkit-scrollbar {
+      width: 8px;
+    }
+    .modal::-webkit-scrollbar-thumb {
+      background: #81c784;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Agroalpha - Mapa Interactivo</header>
+
+  <div class="mapa">
+    <div class="fila" id="fila-norte"></div>
+    <div class="pasillo">PASILLO CENTRAL</div>
+    <div class="fila" id="fila-sur"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modalDetalle">
+    <button class="cerrar" onclick="cerrarModal()">Cerrar ✖</button>
+    <h3 id="tituloCapilla">Capilla</h3>
+    <div class="camas" id="contenedorCamas"></div>
+  </div>
+
+  <!-- Paleta -->
+  <div class="paleta" id="paletaColores" title="Selecciona color para pintar">
+    <div class="color-btn verde" data-color="#4caf50" title="Sin problemas"></div>
+    <div class="color-btn rojo" data-color="#f44336" title="Plaga detectada"></div>
+    <div class="color-btn amarillo" data-color="#ffeb3b" title="Observación pendiente"></div>
+    <div class="color-btn azul" data-color="#2196f3" title="Trabajo programado"></div>
+    <div class="color-btn borrador" data-color="" title="Borrador"></div>
+  </div>
+
+<script>
+  const filaNorte = document.getElementById("fila-norte");
+  const filaSur = document.getElementById("fila-sur");
+  const modal = document.getElementById("modalDetalle");
+  const titulo = document.getElementById("tituloCapilla");
+  const contenedorCamas = document.getElementById("contenedorCamas");
+  const paleta = document.getElementById("paletaColores");
+  let colorActivo = null;
+
+  // Datos guardados en localStorage: { "1 N": { cama1: [...tramos], cama2: [...], ... }, ... }
+  let datosCapillas = JSON.parse(localStorage.getItem("datosCapillas")) || {};
+
+  // Crear capillas
+  function crearCapilla(nombre) {
+    const div = document.createElement("div");
+    div.className = "capilla";
+    div.textContent = nombre;
+    div.onclick = () => abrirModal(nombre);
+    return div;
+  }
+
+  // Render filas y luego actualizar colores
+  for (let i = 1; i <= 18; i++) {
+    const capN = crearCapilla(`${i} N`);
+    filaNorte.appendChild(capN);
+    const capS = crearCapilla(`${i} S`);
+    filaSur.appendChild(capS);
+  }
+
+  // Paleta eventos
+  paleta.querySelectorAll(".color-btn").forEach(btn => {
+    btn.onclick = () => {
+      paleta.querySelectorAll(".color-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      colorActivo = btn.dataset.color;
+    };
+  });
+
+  // Abrir modal con camas y tramos
+  function abrirModal(nombreCapilla) {
+    titulo.textContent = `Capilla ${nombreCapilla}`;
+    contenedorCamas.innerHTML = "";
+    // Si no existe, inicializar estructura
+    if (!datosCapillas[nombreCapilla]) {
+      datosCapillas[nombreCapilla] = {};
+      for(let c=1; c<=8; c++){
+        datosCapillas[nombreCapilla][`cama${c}`] = Array(10).fill("");
+      }
+      guardarDatos();
+    }
+
+    // Crear camas
+    for(let c=1; c<=8; c++){
+      const camaDiv = document.createElement("div");
+      camaDiv.className = "cama";
+
+      // Header cama con texto para seleccionar toda la cama
+      const header = document.createElement("div");
+      header.className = "cama-header";
+      header.textContent = `Cama ${c}`;
+      camaDiv.appendChild(header);
+
+      // Tramos
+      const tramosDiv = document.createElement("div");
+      tramosDiv.className = "tramos";
+
+      datosCapillas[nombreCapilla][`cama${c}`].forEach((color, idx) => {
+        const tramo = document.createElement("div");
+        tramo.className = "tramo";
+        tramo.dataset.capilla = nombreCapilla;
+        tramo.dataset.cama = `cama${c}`;
+        tramo.dataset.tramo = idx;
+        if(color) tramo.style.backgroundColor = color;
+
+        // Click en tramo pinta con color activo
+        tramo.onclick = (e) => {
+          e.stopPropagation();
+          if(colorActivo === null) return alert("Selecciona un color en la paleta primero");
+
+          if(colorActivo === ""){
+            tramo.style.backgroundColor = "";
+            datosCapillas[nombreCapilla][`cama${c}`][idx] = "";
+          } else {
+            tramo.style.backgroundColor = colorActivo;
+            datosCapillas[nombreCapilla][`cama${c}`][idx] = colorActivo;
+          }
+          guardarDatos();
+          actualizarColorCapillaEnMapa(nombreCapilla);
+        };
+
+        tramosDiv.appendChild(tramo);
+      });
+
+      // Click en header pinta toda la cama
+      header.onclick = (e) => {
+        e.stopPropagation();
+        if(colorActivo === null) return alert("Selecciona un color en la paleta primero");
+
+        if(colorActivo === ""){
+          datosCapillas[nombreCapilla][`cama${c}`] = Array(10).fill("");
+        } else {
+          datosCapillas[nombreCapilla][`cama${c}`] = Array(10).fill(colorActivo);
+        }
+        abrirModal(nombreCapilla); // Re-render modal para refrescar colores
+        guardarDatos();
+        actualizarColorCapillaEnMapa(nombreCapilla);
+      };
+
+      camaDiv.appendChild(tramosDiv);
+      contenedorCamas.appendChild(camaDiv);
+    }
+
+    modal.style.display = "block";
+  }
+
+  // Cerrar modal
+  function cerrarModal(){
+    modal.style.display = "none";
+  }
+
+  // Guardar en localStorage
+  function guardarDatos(){
+    localStorage.setItem("datosCapillas", JSON.stringify(datosCapillas));
+  }
+
+  // Actualizar color general de capilla en el mapa según camas y tramos
+  // Regla simple: rojo > amarillo > azul > verde (por defecto)
+  function actualizarColorCapillaEnMapa(nombreCapilla){
+    const capillasMapa = document.querySelectorAll(".capilla");
+    const capillaDiv = Array.from(capillasMapa).find(div => div.textContent === nombreCapilla);
+    if(!capillaDiv) return;
+
+    const datos = datosCapillas[nombreCapilla];
+    if(!datos) return;
+
+    let colorDominante = "#4caf50"; // verde por defecto
+    outer: for(const cama in datos){
+      for(const tramoColor of datos[cama]){
+        if(tramoColor === "#f44336"){
+          colorDominante = "#f44336";
+          break outer;
+        }
+      }
+    }
+    if(colorDominante !== "#f44336"){
+      outer2: for(const cama in datos){
+        for(const tramoColor of datos[cama]){
+          if(tramoColor === "#ffeb3b"){
+            colorDominante = "#ffeb3b";
+            break outer2;
+          }
+        }
+      }
+    }
+    if(colorDominante !== "#f44336" && colorDominante !== "#ffeb3b"){
+      outer3: for(const cama in datos){
+        for(const tramoColor of datos[cama]){
+          if(tramoColor === "#2196f3"){
+            colorDominante = "#2196f3";
+            break outer3;
+          }
+        }
+      }
+    }
+    capillaDiv.style.backgroundColor = colorDominante;
+  }
+
+  // Al iniciar, actualizar colores de todas capillas
+  function actualizarTodosColores(){
+    Object.keys(datosCapillas).forEach(nombre => {
+      actualizarColorCapillaEnMapa(nombre);
+    });
+  }
+
+  // Actualizar colores de capillas cargadas
+  actualizarTodosColores();
+
+</script>
+
+</body>
+</html>
