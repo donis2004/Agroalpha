@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tabla de Plagas y Benéficos - Agroalpha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background-color: #a5d6a7;
+    }
+    tr:nth-child(even) {
+      background-color: #e8f5e9;
+    }
+    .plaga {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    .benefico {
+      color: #388e3c;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Agroalpha - Tabla de Plagas y Organismos Benéficos</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Plaga</th>
+        <th>Nombre Científico</th>
+        <th>Organismo Benéfico</th>
+        <th>Acción del Benéfico</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="plaga">Mosca blanca</td>
+        <td>Bemisia tabaci</td>
+        <td class="benefico">Encarsia formosa</td>
+        <td>Parásita los huevos y ninfas de la plaga</td>
+      </tr>
+      <tr>
+        <td class="plaga">Ácaro rojo</td>
+        <td>Tetranychus urticae</td>
+        <td class="benefico">Phytoseiulus persimilis</td>
+        <td>Depredador directo de los ácaros</td>
+      </tr>
+      <tr>
+        <td class="plaga">Trips</td>
+        <td>Frankliniella occidentalis</td>
+        <td class="benefico">Amblyseius swirskii</td>
+        <td>Depreda huevos y larvas de trips</td>
+      </tr>
+      <tr>
+        <td class="plaga">Pulgones</td>
+        <td>Aphis gossypii</td>
+        <td class="benefico">Aphidius colemani</td>
+        <td>Parásita pulgones adultos</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registros Guardados - Agroalpha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #2e7d32;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px auto;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #a5d6a7;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #e8f5e9;
+    }
+
+    .seccion {
+      margin-top: 50px;
+      page-break-after: always;
+    }
+
+    .botones {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #contenido, #contenido * {
+        visibility: visible;
+      }
+      #contenido {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Agroalpha</h1>
+  <h2>Registros Guardados</h2>
+
+  <div class="botones">
+    <button id="btnImprimir">🖨️ Imprimir</button>
+    <button id="btnExportarExcel">📥 Exportar a Excel</button>
+    <button id="btnExportarPDF">📄 Exportar a PDF</button>
+  </div>
+
+  <div id="contenido">
+
+    <div class="seccion">
+      <h3>🪰 Plagas</h3>
+      <table id="tablaPlagas">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Ubicación</th>
+            <th>Plaga</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="seccion">
+      <h3>🦟 Organismos Benéficos</h3>
+      <table id="tablaBeneficos">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Ubicación</th>
+            <th>Benéfico</th>
+            <th>Acción Observada</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Librerías para exportar -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    // Cargar datos desde localStorage y llenar tablas
+    function cargarDatos() {
+      const plagas = JSON.parse(localStorage.getItem("registrosPlagas")) || [];
+      const beneficos = JSON.parse(localStorage.getItem("registrosBeneficos")) || [];
+
+      const tablaPlagas = document.querySelector("#tablaPlagas tbody");
+      const tablaBeneficos = document.querySelector("#tablaBeneficos tbody");
+
+      tablaPlagas.innerHTML = "";
+      plagas.forEach(p => {
+        const fila = `<tr>
+          <td>${p.fecha}</td>
+          <td>${p.ubicacion}</td>
+          <td>${p.plaga}</td>
+          <td>${p.descripcion}</td>
+        </tr>`;
+        tablaPlagas.innerHTML += fila;
+      });
+
+      tablaBeneficos.innerHTML = "";
+      beneficos.forEach(b => {
+        const fila = `<tr>
+          <td>${b.fecha}</td>
+          <td>${b.ubicacion}</td>
+          <td>${b.benefico}</td>
+          <td>${b.accion}</td>
+        </tr>`;
+        tablaBeneficos.innerHTML += fila;
+      });
+    }
+
+    cargarDatos();
+
+    // Imprimir solo la sección de contenido
+    document.getElementById("btnImprimir").addEventListener("click", () => {
+      window.print();
+    });
+
+    // Exportar a Excel
+    document.getElementById("btnExportarExcel").addEventListener("click", () => {
+      const wb = XLSX.utils.book_new();
+
+      // Crear hojas de Excel con los datos de las tablas
+      const plagasTable = document.getElementById("tablaPlagas");
+      const beneficosTable = document.getElementById("tablaBeneficos");
+
+      const wsPlagas = XLSX.utils.table_to_sheet(plagasTable);
+      XLSX.utils.book_append_sheet(wb, wsPlagas, "Plagas");
+
+      const wsBeneficos = XLSX.utils.table_to_sheet(beneficosTable);
+      XLSX.utils.book_append_sheet(wb, wsBeneficos, "Benéficos");
+
+      XLSX.writeFile(wb, "Registros_Agroalpha.xlsx");
+    });
+
+    // Exportar a PDF usando jsPDF y autotable
+    document.getElementById("btnExportarPDF").addEventListener("click", () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Configura margen y título
+      const marginLeft = 10;
+      let y = 10;
+
+      doc.setFontSize(18);
+      doc.text("Registros Agroalpha", marginLeft, y);
+      y += 10;
+
+      // Plagas
+      doc.setFontSize(14);
+      doc.text("🪰 Plagas", marginLeft, y);
+      y += 6;
+
+      doc.autoTable({
+        startY: y,
+        html: '#tablaPlagas',
+        theme: 'striped',
+        headStyles: { fillColor: [165, 214, 167] },
+        margin: { left: marginLeft },
+        styles: { fontSize: 10 },
+        didDrawPage: (data) => {
+          y = data.cursor.y + 10;
+        }
+      });
+
+      // Benéficos
+      doc.setFontSize(14);
+      doc.text("🦟 Organismos Benéficos", marginLeft, y);
+      y += 6;
+
+      doc.autoTable({
+        startY: y,
+        html: '#tablaBeneficos',
+        theme: 'striped',
+        headStyles: { fillColor: [165, 214, 167] },
+        margin: { left: marginLeft },
+        styles: { fontSize: 10 }
+      });
+
+      doc.save("Registros_Agroalpha.pdf");
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro de Plagas y Benéficos - Agroalpha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #2e7d32;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    .success {
+      text-align: center;
+      color: #388e3c;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .seccion {
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Agroalpha</h1>
+  <h2>Registro de Plagas y Benéficos</h2>
+
+  <!-- Sección: Registro de Plagas -->
+  <div class="seccion">
+    <form id="formPlaga">
+      <h3>🪰 Registro de Plagas</h3>
+
+      <label for="fechaPlaga">Fecha</label>
+      <input type="date" id="fechaPlaga" name="fechaPlaga" required />
+
+      <label for="ubicacionPlaga">Ubicación (Capilla)</label>
+      <select id="ubicacionPlaga" name="ubicacionPlaga" required>
+        <option value="">Seleccione una capilla</option>
+        <option value="1 Norte">1 Norte</option>
+        <option value="2 Norte">2 Norte</option>
+        <option value="3 Norte">3 Norte</option>
+        <option value="4 Norte">4 Norte</option>
+        <option value="5 Norte">5 Norte</option>
+        <option value="6 Norte">6 Norte</option>
+        <option value="7 Norte">7 Norte</option>
+        <option value="8 Norte">8 Norte</option>
+        <option value="9 Norte">9 Norte</option>
+        <option value="10 Norte">10 Norte</option>
+        <option value="11 Norte">11 Norte</option>
+        <option value="12 Norte">12 Norte</option>
+        <option value="13 Norte">13 Norte</option>
+        <option value="14 Norte">14 Norte</option>
+        <option value="15 Norte">15 Norte</option>
+        <option value="16 Norte">16 Norte</option>
+        <option value="17 Norte">17 Norte</option>
+        <option value="18 Norte">18 Norte</option>
+        <option value="1 Sur">1 Sur</option>
+        <option value="2 Sur">2 Sur</option>
+        <option value="3 Sur">3 Sur</option>
+        <option value="4 Sur">4 Sur</option>
+        <option value="5 Sur">5 Sur</option>
+        <option value="6 Sur">6 Sur</option>
+        <option value="7 Sur">7 Sur</option>
+        <option value="8 Sur">8 Sur</option>
+        <option value="9 Sur">9 Sur</option>
+        <option value="10 Sur">10 Sur</option>
+        <option value="11 Sur">11 Sur</option>
+        <option value="12 Sur">12 Sur</option>
+        <option value="13 Sur">13 Sur</option>
+        <option value="14 Sur">14 Sur</option>
+        <option value="15 Sur">15 Sur</option>
+        <option value="16 Sur">16 Sur</option>
+        <option value="17 Sur">17 Sur</option>
+        <option value="18 Sur">18 Sur</option>
+      </select>
+
+      <label for="plaga">Nombre de la Plaga</label>
+      <select id="plaga" name="plaga" required>
+        <option value="">Seleccione una plaga</option>
+        <option value="Mosca blanca">Mosca blanca</option>
+        <option value="Pulgón">Pulgón</option>
+        <option value="Mildiu">Mildiu</option>
+        <option value="Picudo">Picudo</option>
+      </select>
+
+      <label for="descripcionPlaga">Descripción / Observación</label>
+      <textarea id="descripcionPlaga" name="descripcionPlaga" rows="3" placeholder="Ej. Alta población en hojas jóvenes"></textarea>
+
+      <button type="submit">Registrar Plaga</button>
+      <div class="success" id="mensajePlaga" style="display:none;">
+        ✔️ Plaga registrada con éxito.
+      </div>
+    </form>
+  </div>
+
+  <!-- Sección: Registro de Benéficos -->
+  <div class="seccion">
+    <form id="formBenefico">
+      <h3>🦟 Registro de Organismos Benéficos</h3>
+
+      <label for="fechaBenefico">Fecha</label>
+      <input type="date" id="fechaBenefico" name="fechaBenefico" required />
+
+      <label for="ubicacionBenefico">Ubicación (Capilla)</label>
+      <select id="ubicacionBenefico" name="ubicacionBenefico" required>
+        <option value="">Seleccione una capilla</option>
+        <option value="1 Norte">1 Norte</option>
+        <option value="2 Norte">2 Norte</option>
+        <option value="3 Norte">3 Norte</option>
+        <option value="4 Norte">4 Norte</option>
+        <option value="5 Norte">5 Norte</option>
+        <option value="6 Norte">6 Norte</option>
+        <option value="7 Norte">7 Norte</option>
+        <option value="8 Norte">8 Norte</option>
+        <option value="9 Norte">9 Norte</option>
+        <option value="10 Norte">10 Norte</option>
+        <option value="11 Norte">11 Norte</option>
+        <option value="12 Norte">12 Norte</option>
+        <option value="13 Norte">13 Norte</option>
+        <option value="14 Norte">14 Norte</option>
+        <option value="15 Norte">15 Norte</option>
+        <option value="16 Norte">16 Norte</option>
+        <option value="17 Norte">17 Norte</option>
+        <option value="18 Norte">18 Norte</option>
+        <option value="1 Sur">1 Sur</option>
+        <option value="2 Sur">2 Sur</option>
+        <option value="3 Sur">3 Sur</option>
+        <option value="4 Sur">4 Sur</option>
+        <option value="5 Sur">5 Sur</option>
+        <option value="6 Sur">6 Sur</option>
+        <option value="7 Sur">7 Sur</option>
+        <option value="8 Sur">8 Sur</option>
+        <option value="9 Sur">9 Sur</option>
+        <option value="10 Sur">10 Sur</option>
+        <option value="11 Sur">11 Sur</option>
+        <option value="12 Sur">12 Sur</option>
+        <option value="13 Sur">13 Sur</option>
+        <option value="14 Sur">14 Sur</option>
+        <option value="15 Sur">15 Sur</option>
+        <option value="16 Sur">16 Sur</option>
+        <option value="17 Sur">17 Sur</option>
+        <option value="18 Sur">18 Sur</option>
+      </select>
+
+      <label for="benefico">Nombre del Organismo Benéfico</label>
+      <select id="benefico" name="benefico" required>
+        <option value="">Seleccione un benéfico</option>
+        <option value="Swirski">Swirski</option>
+        <option value="Cucumeris">Cucumeris</option>
+        <option value="Críxopa">Críxopa</option>
+      </select>
+
+      <label for="accionBenefico">Acción Observada</label>
+      <textarea id="accionBenefico" name="accionBenefico" rows="3" placeholder="Ej. Parasitando ninfas de mosca blanca"></textarea>
+
+      <button type="submit">Registrar Benéfico</button>
+      <div class="success" id="mensajeBenefico" style="display:none;">
+        ✔️ Organismo benéfico registrado con éxito.
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Función para guardar en localStorage
+    const guardarEnLocalStorage = (clave, nuevoRegistro) => {
+      const registros = JSON.parse(localStorage.getItem(clave)) || [];
+      registros.push(nuevoRegistro);
+      localStorage.setItem(clave, JSON.stringify(registros));
+    };
+
+    // Formulario de Plaga
+    const formPlaga = document.getElementById("formPlaga");
+    const mensajePlaga = document.getElementById("mensajePlaga");
+
+    formPlaga.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const nuevo = {
+        fecha: formPlaga.fechaPlaga.value,
+        ubicacion: formPlaga.ubicacionPlaga.value,
+        plaga: formPlaga.plaga.value,
+        descripcion: formPlaga.descripcionPlaga.value
+      };
+
+      guardarEnLocalStorage("registrosPlagas", nuevo);
+
+      mensajePlaga.style.display = "block";
+      setTimeout(() => {
+        mensajePlaga.style.display = "none";
+        formPlaga.reset();
+      }, 2000);
+    });
+
+    // Formulario de Benéfico
+    const formBenefico = document.getElementById("formBenefico");
+    const mensajeBenefico = document.getElementById("mensajeBenefico");
+
+    formBenefico.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const nuevo = {
+        fecha: formBenefico.fechaBenefico.value,
+        ubicacion: formBenefico.ubicacionBenefico.value,
+        benefico: formBenefico.benefico.value,
+        accion: formBenefico.accionBenefico.value
+      };
+
+      guardarEnLocalStorage("registrosBeneficos", nuevo);
+
+      mensajeBenefico.style.display = "block";
+      setTimeout(() => {
+        mensajeBenefico.style.display = "none";
+        formBenefico.reset();
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>
